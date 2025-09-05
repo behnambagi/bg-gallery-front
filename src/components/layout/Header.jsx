@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../common/Toast';
 import Button from '../common/Button';
@@ -6,27 +6,34 @@ import Button from '../common/Button';
 const Header = ({ title, showBackButton = false, onBack, actions = [] }) => {
   const { user, logout } = useAuth();
   const { showSuccess } = useToast();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     showSuccess('با موفقیت خارج شدید');
+    setIsDropdownOpen(false);
   };
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-100 px-4 py-4 max-w-sm mx-auto">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
+    <header className="bg-white/95 backdrop-blur-lg shadow-soft border-b border-gray-100/50 px-4 py-4 sticky top-0 z-40 animate-slide-down">
+      <div className="flex items-center justify-between max-w-md mx-auto">
+        <div className="flex items-center space-x-3 space-x-reverse">
           {showBackButton && (
             <button
               onClick={onBack}
-              className="p-2 text-gray-600 hover:text-gray-800 transition-colors ml-2"
+              className="p-2.5 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
           )}
-          <h1 className="text-lg font-semibold text-gray-900">{title}</h1>
+          <div>
+            <h1 className="text-lg font-bold text-gray-900 gradient-text">{title}</h1>
+            {user?.galleryName && (
+              <p className="text-xs text-gray-500 mt-0.5">{user.galleryName}</p>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center space-x-2 space-x-reverse">
@@ -34,9 +41,9 @@ const Header = ({ title, showBackButton = false, onBack, actions = [] }) => {
             <button
               key={index}
               onClick={action.onClick}
-              className={`p-2 rounded-lg transition-colors ${
+              className={`p-2.5 rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 ${
                 action.variant === 'primary' 
-                  ? 'text-primary-500 hover:bg-primary-50' 
+                  ? 'text-primary-600 hover:bg-primary-50 hover:text-primary-700' 
                   : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
               }`}
             >
@@ -44,27 +51,48 @@ const Header = ({ title, showBackButton = false, onBack, actions = [] }) => {
             </button>
           ))}
           
-          <div className="relative group">
-            <button className="flex items-center p-2 text-gray-600 hover:text-gray-800 transition-colors">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
+          <div className="relative">
+            <button 
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center p-2.5 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95"
+            >
+              <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center text-white text-sm font-bold shadow-md">
+                {user?.galleryName?.charAt(0) || 'ک'}
+              </div>
             </button>
             
-            <div className="absolute left-0 top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-              <div className="p-3 border-b border-gray-100">
-                <p className="text-sm font-medium text-gray-900">{user?.galleryName || 'کاربر'}</p>
-                <p className="text-xs text-gray-500">{user?.phoneNumber}</p>
-              </div>
-              <div className="p-2">
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-right px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                >
-                  خروج از حساب کاربری
-                </button>
-              </div>
-            </div>
+            {isDropdownOpen && (
+              <>
+                <div 
+                  className="fixed inset-0 z-10" 
+                  onClick={() => setIsDropdownOpen(false)}
+                />
+                <div className="absolute left-0 top-full mt-2 w-56 bg-white border border-gray-200 rounded-2xl shadow-large z-20 animate-slide-down overflow-hidden">
+                  <div className="p-4 bg-gradient-to-r from-primary-50 to-primary-100 border-b border-gray-100">
+                    <div className="flex items-center space-x-3 space-x-reverse">
+                      <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center text-white font-bold shadow-md">
+                        {user?.galleryName?.charAt(0) || 'ک'}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 truncate">{user?.galleryName || 'کاربر عزیز'}</p>
+                        <p className="text-xs text-gray-600 truncate">{user?.phoneNumber}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-2">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center text-right px-3 py-2.5 text-sm text-danger-600 hover:bg-danger-50 rounded-xl transition-all duration-200 group"
+                    >
+                      <svg className="w-4 h-4 ml-3 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                      خروج از حساب کاربری
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

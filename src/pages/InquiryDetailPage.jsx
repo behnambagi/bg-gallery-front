@@ -52,7 +52,7 @@ const InquiryDetailPage = () => {
       const data = await productService.getMyProducts({
         page: 1,
         limit: 50,
-        sortBy: 'created_at',
+        sortBy: 'createdAt',
         sortOrder: 'desc'
       });
       setMyProducts(data.filter(product => product.status === 'active'));

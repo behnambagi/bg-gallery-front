@@ -5,6 +5,7 @@ import Card from '../components/common/Card';
 import Badge from '../components/common/Badge';
 import Button from '../components/common/Button';
 import Select from '../components/common/Select';
+import BottomSheetSelect from '../components/common/BottomSheetSelect';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { inquiryService } from '../services/inquiries';
 import { useToast } from '../components/common/Toast';
@@ -17,6 +18,7 @@ const InquiriesPage = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     fetchInquiries();
@@ -36,7 +38,8 @@ const InquiriesPage = () => {
       }
 
       const data = await inquiryService.getJewelerInquiries(params);
-      setInquiries(data);
+      console.log(data);
+      setInquiries(data.inquiries);
     } catch (error) {
       showError('خطا در بارگذاری استعلام‌ها');
     } finally {
@@ -115,14 +118,49 @@ const InquiriesPage = () => {
           </Card>
         )}
 
-        <div className="flex items-center justify-between">
-          <Select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            options={statusOptions}
-            className="flex-1"
-          />
+        {/* Minimal Filter */}
+        <div className="flex justify-end animate-slide-up">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="px-4 py-3 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 flex items-center space-x-2 space-x-reverse"
+          >
+            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
+            </svg>
+            <span className="text-sm font-medium text-gray-700">فیلتر وضعیت</span>
+            {statusFilter && (
+              <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
+            )}
+          </button>
         </div>
+
+        {/* Collapsible Filter */}
+        {showFilters && (
+          <Card shadow="medium" className="animate-scale-in">
+            <BottomSheetSelect
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              options={statusOptions}
+              placeholder="وضعیت استعلام"
+              icon={
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              }
+            />
+            
+            {statusFilter && (
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <button
+                  onClick={() => setStatusFilter('')}
+                  className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
+                >
+                  پاک کردن فیلتر
+                </button>
+              </div>
+            )}
+          </Card>
+        )}
 
         {loading ? (
           <div className="flex items-center justify-center py-8">
@@ -145,7 +183,7 @@ const InquiriesPage = () => {
           </Card>
         ) : (
           <div className="space-y-3">
-            {inquiries.map((inquiry) => (
+            {inquiries?.map((inquiry) => (
               <Card key={inquiry.id} padding="sm" hover onClick={() => navigate(`/inquiries/${inquiry.id}`)}>
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
