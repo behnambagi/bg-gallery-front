@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import { jewelerService } from '../../services/jeweler';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import Textarea from '../common/Textarea';
 import Select from '../common/Select';
 import { useToast } from '../common/Toast';
-import LoadingSpinner from '../common/LoadingSpinner';
 
 const RegisterScreen = () => {
     const navigate = useNavigate();
@@ -17,7 +16,6 @@ const RegisterScreen = () => {
     const [formData, setFormData] = useState({
         galleryName: '',
         ownerName: '',
-        phoneNumber: '',
         address: '',
         city: '',
         province: '',
@@ -118,7 +116,7 @@ const RegisterScreen = () => {
 
     const validateStep = (step) => {
         const stepFields = {
-            1: ['galleryName', 'ownerName', 'phoneNumber'],
+            1: ['galleryName', 'ownerName'],
             2: ['address', 'city', 'province'],
             3: [], // Optional fields
             4: [] // Working hours are optional
@@ -130,11 +128,6 @@ const RegisterScreen = () => {
                 showError(`لطفاً ${getFieldLabel(field)} را وارد کنید`);
                 return false;
             }
-        }
-
-        if (step === 1 && !/^09\d{9}$/.test(formData.phoneNumber)) {
-            showError('شماره موبایل باید با 09 شروع شده و 11 رقم باشد');
-            return false;
         }
 
         return true;
@@ -151,7 +144,6 @@ const RegisterScreen = () => {
         const labels = {
             galleryName: 'نام گالری',
             ownerName: 'نام مالک',
-            phoneNumber: 'شماره موبایل',
             address: 'آدرس',
             city: 'شهر',
             province: 'استان'
@@ -233,19 +225,6 @@ const RegisterScreen = () => {
                             icon={
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                            }
-                        />
-
-                        <Input
-                            label="شماره موبایل *"
-                            value={formData.phoneNumber}
-                            onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-                            placeholder="09123456789"
-                            type="tel"
-                            icon={
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                 </svg>
                             }
                         />
@@ -475,13 +454,6 @@ const RegisterScreen = () => {
                             style={{ width: `${(currentStep / totalSteps) * 100}%` }}
                         />
                     </div>
-                    <div className="flex justify-between mt-2">
-                        {Array.from({ length: totalSteps }, (_, i) => (
-                            <div key={i} className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                                i + 1 <= currentStep ? 'bg-primary-500' : 'bg-gray-300'
-                            }`} />
-                        ))}
-                    </div>
                 </div>
 
                 {/* Form Content */}
@@ -490,13 +462,12 @@ const RegisterScreen = () => {
                 </div>
 
                 {/* Navigation Buttons */}
-                <div className="flex gap-3 mb-6">
+                <div className="flex gap-3 justify-between mb-6">
                     {currentStep > 1 && (
                         <Button
                             onClick={prevStep}
                             variant="outline"
                             size="lg"
-                            className="flex-1"
                             icon={
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -506,12 +477,11 @@ const RegisterScreen = () => {
                             قبلی
                         </Button>
                     )}
-                    
+
                     {currentStep < totalSteps ? (
                         <Button
                             onClick={nextStep}
                             size="lg"
-                            className="flex-1"
                             icon={
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -525,7 +495,6 @@ const RegisterScreen = () => {
                         <Button
                             onClick={handleSubmit}
                             size="lg"
-                            className="flex-1"
                             loading={loading}
                             variant="success"
                             icon={

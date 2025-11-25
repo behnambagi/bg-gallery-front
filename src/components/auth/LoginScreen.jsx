@@ -64,7 +64,7 @@ const LoginScreen = () => {
       const response = await login(phoneNumber, otpCode);
       
       if (response.needsRegistration === true) {
-        navigate('/register');
+        navigate('/register?phoneNumber=' + phoneNumber);
       } else if (response.isNewUser === true) {
         navigate('/dashboard');
       } else {

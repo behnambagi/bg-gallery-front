@@ -9,6 +9,7 @@ import { inquiryService } from '../services/inquiries';
 import { productService } from '../services/products';
 import { subscriptionService } from '../services/subscriptions';
 import { mediaService } from '../services/media';
+import Button from "../components/common/Button.jsx";
 
 const DashboardPage = () => {
   const navigate = useNavigate();
