@@ -29,6 +29,16 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     
+    // Check for "Jeweler not found or inactive" message
+    if (error.response?.status === 401 && 
+        error.response?.data?.message === "Jeweler not found or inactive") {
+      console.log('🔄 Jeweler not found or inactive - redirecting to register');
+      
+      // Don't clear tokens, just redirect to register with reason
+      // window.location.href = '/register?reason=inactive';
+      // return Promise.reject(error);
+    }
+    
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       
@@ -50,6 +60,12 @@ api.interceptors.response.use(
           window.location.href = '/login';
           return Promise.reject(refreshError);
         }
+      } else {
+        // No refresh token, redirect to login
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
       }
     }
     

@@ -15,6 +15,17 @@ const RegisterScreen = () => {
     const { showSuccess, showError } = useToast();
     const [currentStep, setCurrentStep] = useState(1);
     const totalSteps = 4;
+
+    // Show message if redirected from jeweler not found
+    React.useEffect(() => {
+        // Check if user was redirected due to inactive jeweler
+        const urlParams = new URLSearchParams(window.location.search);
+        const reason = urlParams.get('reason');
+        
+        if (reason === 'inactive') {
+            showError('برای دسترسی به داشبورد، ابتدا فرآیند ثبت‌نام گالری را تکمیل کنید.');
+        }
+    }, [showError]);
     const [formData, setFormData] = useState({
         galleryName: '',
         ownerName: '',
