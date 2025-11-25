@@ -5,6 +5,8 @@ import Button from '../common/Button';
 import Input from '../common/Input';
 import Textarea from '../common/Textarea';
 import Select from '../common/Select';
+import LogoUploader from '../common/LogoUploader';
+import CoverImageUploader from '../common/CoverImageUploader';
 import { useToast } from '../common/Toast';
 
 const RegisterScreen = () => {
@@ -23,8 +25,8 @@ const RegisterScreen = () => {
             latitude: '',
             longitude: ''
         },
-        logoUrl: '',
-        coverImageUrl: '',
+        logo: null,
+        coverImage: null,
         aboutUs: '',
         workingHours: {
             saturday: { open: '09:00', close: '18:00', closed: false },
@@ -175,6 +177,16 @@ const RegisterScreen = () => {
                 submitData.location.longitude = parseFloat(submitData.location.longitude);
             }
 
+            // Convert uploaded images to URLs
+            if (submitData.logo) {
+                submitData.logoUrl = submitData.logo.url;
+                delete submitData.logo;
+            }
+            if (submitData.coverImage) {
+                submitData.coverImageUrl = submitData.coverImage.url;
+                delete submitData.coverImage;
+            }
+
             await jewelerService.register(submitData);
             showSuccess('درخواست ثبت‌نام با موفقیت ارسال شد.');
 
@@ -322,29 +334,30 @@ const RegisterScreen = () => {
                             <p className="text-gray-600">لوگو، کاور و معرفی گالری (اختیاری)</p>
                         </div>
 
-                        <Input
-                            label="لینک لوگو"
-                            value={formData.logoUrl}
-                            onChange={(e) => handleInputChange('logoUrl', e.target.value)}
-                            placeholder="https://example.com/logo.jpg"
-                            icon={
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                                </svg>
-                            }
-                        />
+                        <div className="space-y-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-3">
+                                    لوگو گالری
+                                </label>
+                                <LogoUploader
+                                    onLogoChange={(logo) => handleInputChange('logo', logo)}
+                                    size="md"
+                                    showExisting={false}
+                                />
+                            </div>
 
-                        <Input
-                            label="لینک تصویر کاور"
-                            value={formData.coverImageUrl}
-                            onChange={(e) => handleInputChange('coverImageUrl', e.target.value)}
-                            placeholder="https://example.com/cover.jpg"
-                            icon={
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                            }
-                        />
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-3">
+                                    تصویر کاور گالری
+                                </label>
+                                <CoverImageUploader
+                                    onImageChange={(image) => handleInputChange('coverImage', image)}
+                                    height="normal"
+                                    showExisting={false}
+                                    overlayText="تصویر کاور گالری"
+                                />
+                            </div>
+                        </div>
 
                         <Textarea
                             label="درباره ما"

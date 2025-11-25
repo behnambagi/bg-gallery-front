@@ -8,11 +8,7 @@ export const uploadService = {
     formData.append('category', category);
     formData.append('altText', altText);
 
-    const response = await api.post('/upload/single', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.post('/upload/single', formData);
     
     return response.data;
   },
@@ -25,11 +21,7 @@ export const uploadService = {
       formData.append('altText', altText);
     }
 
-    const response = await api.post('/upload/multiple', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.post('/upload/multiple', formData);
     
     return response.data;
   },
@@ -69,11 +61,7 @@ export const uploadService = {
       formData.append('altTexts', JSON.stringify(altTexts));
     }
 
-    const response = await api.post(`/media/products/${productId}/upload`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.post(`/media/products/${productId}/upload`, formData);
     
     return response.data;
   },
